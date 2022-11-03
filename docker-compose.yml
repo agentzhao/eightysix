@@ -1,4 +1,5 @@
 version: "3.9"
+
 services:
   eightysix:
     image: eightysix
@@ -16,16 +17,16 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: eightysix_prod
+    container_name: eightysix_nginx
     profiles: ["prod"]
     volumes:
       - $PWD/dist:/usr/share/nginx/html
-    restart: unless-stopped
+    restart: always
     network_mode: traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.receiver.rule=Host(`eightysix.agentzhao.me`)"
-      - "traefik.http.routers.receiver.tls=true"
-      - "traefik.http.routers.receiver.tls.certresolver=lets-encrypt"
-      - "traefik.http.routers.receiver.entrypoints=websecure"
+      - "traefik.http.routers.86.rule=Host(`86.agentzhao.me`)"
+      - "traefik.http.routers.86.tls=true"
+      - "traefik.http.routers.86.tls.certresolver=lets-encrypt"
+      - "traefik.http.routers.86.entrypoints=websecure"
       - "traefik.port=80"
