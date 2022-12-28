@@ -1,8 +1,20 @@
 <template>
   <div class="w-screen h-screen bg-background">
     <Background />
-    <div class="grid place-items-center h-screen">
-      <h1 class="text-2xl text-white">Watch this space</h1>
+    <div class="grid content-center h-screen">
+      <h1 class="flex justify-center text-2xl text-white py-3">
+        Watch this space
+      </h1>
+      <div class="flex flex-row justify-center">
+        <img
+          class="h-64"
+          src="./assets/svg_playing_cards/fronts/spades_8.svg"
+        />
+        <img
+          class="h-64"
+          src="./assets/svg_playing_cards/fronts/hearts_6.svg"
+        />
+      </div>
     </div>
     <!-- Sidebar -->
     <!-- <RouterView /> -->
