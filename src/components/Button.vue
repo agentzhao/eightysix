@@ -2,7 +2,6 @@
   <a
     class="game-button"
     :class="{ 'is-disabled': !isEnabled, 'is-highlighted': isHighlighted }"
-    @click="doAction"
   >
     <svg style="display: none">
       <symbol id="dealRound" viewBox="0 0 88 88">
@@ -23,7 +22,7 @@
           transform="translate(-6 -6)"
         />
       </symbol>
-      <symbol id="doubleDown" viewBox="0 0 88 88">
+      <symbol id="double" viewBox="0 0 88 88">
         <path
           d="M14.37,35.58h4.35c3.67,0,6.2,2.52,6.2,5.8v0a5.84,5.84,0,0,1-6.2,5.84H14.37Zm4.35,9.81a3.8,3.8,0,0,0,4.05-3.94v0a3.83,3.83,0,0,0-4.05-4h-2.3v7.94Z"
           transform="translate(-6 -6)"
@@ -144,21 +143,37 @@
   </a>
 </template>
 
-<script>
-export default {
-  props: {
-    action: {
-      type: String,
-      required: true,
-    },
-    isEnabled: {
-      type: Boolean,
-      required: true,
-    },
+<script setup lang="ts">
+import { defineProps } from "vue";
+
+const props = defineProps({
+  action: {
+    type: String,
+    required: true,
   },
-  computed: {},
-  methods: {},
-};
+  isEnabled: {
+    type: Boolean,
+    required: true,
+  },
+  isHighlighted: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emit = defineEmits<{
+  (e: "hit", val: string): void;
+  (e: "stand", val: string): void;
+  (e: "double", val: string): void;
+  (e: "split", val: string): void;
+  (e: "restart", val: string): void;
+}>();
+
+// const doAction = () => {
+//   if (props.isEnabled) {
+//     this.$store.dispatch(this.action, {});
+//   }
+// };
 </script>
 
 <style scoped>

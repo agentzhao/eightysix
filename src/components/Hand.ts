@@ -4,6 +4,15 @@ export default class Hand {
   private bust: boolean = false;
   private blackjack: boolean = false;
   private soft: boolean = false;
+  private playerID: number;
+  private betAmount: number = 0;
+  private completed: boolean;
+
+  constructor(playerID: number, betAmount: number) {
+    this.playerID = playerID;
+    this.betAmount = betAmount;
+    this.completed = false;
+  }
 
   calculateTotal() {
     let total = 0;
@@ -52,7 +61,55 @@ export default class Hand {
     this.calculateTotal();
   }
 
-  splittable() {
+  changeBet(amount: number) {
+    let temp = amount - this.betAmount;
+    this.betAmount = amount;
+    return temp;
+  }
+
+  // player actions
+  hit(card: { suit: string; value: string }) {
+    this.addCard(card);
+    if (this.isBust()) {
+      this.stand();
+    }
+  }
+
+  stand() {
+    this.completed = true;
+  }
+
+  double(card: { suit: string; value: string }) {
+    this.betAmount *= 2;
+    this.addCard(card);
+    this.stand();
+  }
+
+  split() {
+    //todo: this one is tricky
+    return this.cards.pop();
+  }
+
+  // getters
+  isCompleted() {
+    return this.completed;
+  }
+
+  canHit() {
+    if (this.bust || this.blackjack) {
+      return false;
+    }
+    return true;
+  }
+
+  canStand() {
+    if (this.bust || this.blackjack) {
+      return false;
+    }
+    return true;
+  }
+
+  canSplit() {
     if (this.cards.length === 2) {
       if (this.cards[0].value === this.cards[1].value) {
         return true;
@@ -65,6 +122,14 @@ export default class Hand {
       }
     }
     return false;
+  }
+
+  canDouble() {
+    if (this.cards.length === 2 && !this.blackjack) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // getters
@@ -84,14 +149,25 @@ export default class Hand {
     return this.total;
   }
 
-  hardorsoft() {
-    if (this.soft) {
-      return "soft";
+  handDesc() {
+    if (this.isBlackjack()) {
+      return "blackjack";
+    } else if (this.soft) {
+      return "soft " + this.getTotal();
+    } else {
+      return "hard " + this.getTotal();
     }
-    return "hard";
   }
 
   getCards() {
     return this.cards;
+  }
+
+  getPlayerID() {
+    return this.playerID;
+  }
+
+  getBetAmount() {
+    return this.betAmount;
   }
 }

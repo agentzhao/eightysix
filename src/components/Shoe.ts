@@ -1,18 +1,18 @@
-import * as seedrandom from "seedrandom";
+import seedrandom from "seedrandom";
 
 export default class Shoe {
   private cards: Array<{ suit: string; value: string }> = [];
   private currentIndex = 0;
   private decks: number;
-  private seed: number;
+  private seed: string;
   private cutoff: number;
   private deckOver: boolean = false;
 
-  constructor(decks: number, seed: number) {
+  constructor(decks: number, seed: string) {
     // generate the initial set of cards in the shoe
     this.decks = decks;
-    if (seed === 0) {
-      this.seed = Math.floor(Math.random() * 1000000000);
+    if (seed === "0") {
+      this.seed = Math.floor(Math.random() * 1000000000).toString();
     } else {
       this.seed = seed;
     }

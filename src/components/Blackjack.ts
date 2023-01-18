@@ -1,21 +1,26 @@
 import Shoe from "./Shoe";
 import Player from "./Player";
+import Hand from "./Hand";
 
 export default class Blackjack {
   private gameOver: boolean;
   private roundOver: boolean;
   private shoe: Shoe;
   private numPlayers: number = 1;
+  private defaultMoney: number = 100;
   // array of Hands for players
   private players: Array<Player> = [];
+  private playerHands: Hand[] = [];
   private dealer: Player;
+  private currentHand: Hand;
 
   constructor() {
     for (let i = 0; i < this.numPlayers; i++) {
-      this.players.push(new Player());
+      this.players.push(new Player(i + 1, this.defaultMoney));
     }
-    this.dealer = new Player();
-    this.shoe = new Shoe(6, 123);
+
+    this.dealer = new Player(999, 0);
+    this.shoe = new Shoe(6, "0");
     this.gameOver = false;
     this.roundOver = false;
   }
@@ -28,6 +33,7 @@ export default class Blackjack {
       player.reset();
     });
     this.dealer.reset();
+    this.playerHands = [];
 
     // check if deck is over
     if (this.shoe.getDeckOver()) {
@@ -37,39 +43,85 @@ export default class Blackjack {
 
     // todo: place bets before dealing cards
 
+    // dealer hand
+    this.dealer.newHand(0);
+
+    // initialize player hands depending on bets
+    this.players.forEach((player) => {
+      player.newHand(10);
+
+      // add to playerHands array
+      player.getHands().forEach((hand) => {
+        this.playerHands.push(hand);
+      });
+    });
+
     // deal 2 cards to players and dealer
     for (let i = 0; i < 2; i++) {
-      this.players.forEach((player) => {
-        player.addCard(this.shoe.dealCard());
+      this.playerHands.forEach((hand) => {
+        // hand.addCard(this.shoe.dealCard());
+        (hand as Hand).addCard(this.shoe.dealCard());
       });
-      this.dealer.addCard(this.shoe.dealCard());
+      this.dealer.getHands()[0].addCard(this.shoe.dealCard());
     }
 
     // check for Blackjack
     this.players.forEach((player) => {
-      if (player.getHand().isBlackjack()) {
-        player.setAction(true);
-      }
+      player.getHands().forEach((hand) => {
+        if (hand.isBlackjack()) {
+          // todo: pay out
+        }
+      });
     });
+
+    this.currentHand = this.playerHands[0];
+  }
+
+  doAction(action: string) {
+    switch (action) {
+      case "hit":
+        this.hit(this.currentHand);
+        break;
+      case "stand":
+        this.stand(this.currentHand);
+        break;
+      case "double":
+        this.double(this.currentHand);
+        break;
+      case "split":
+        this.split(this.currentHand);
+        break;
+    }
   }
 
   // player actions
-  hit(player: Player) {
+  hit(hand: Hand) {
     // add a new card to the player's hand
-    player.addCard(this.shoe.dealCard());
-    if (player.getHand().isBust()) {
-      this.stand(player);
-    }
+    console.log("hit");
+    hand.hit(this.shoe.dealCard());
   }
-  stand(player: Player) {
+  stand(hand: Hand) {
     // reveal the dealer's cards and determine the winner
-    player.setAction(true);
+    console.log("stand");
+    hand.stand();
   }
-  double(player: Player) {
-    // double the player's bet and add a new card to the player's hand
+  double(hand: Hand) {
+    // double the player's bet, hit and stand
+    console.log("double");
+    hand.double(this.shoe.dealCard());
   }
-  split(player: Player) {
+  split(hand: Hand) {
     // split the player's hand into two hands
+    console.log("split");
+    const newHand = new Hand(hand.getPlayerID(), hand.getBetAmount());
+    const card = hand.split();
+    if (card) {
+      newHand.addCard(card);
+    }
+
+    hand.addCard(this.shoe.dealCard());
+    newHand.addCard(this.shoe.dealCard());
+    this.playerHands.push(newHand);
   }
 
   // getters
@@ -81,8 +133,16 @@ export default class Blackjack {
     return this.players;
   }
 
+  getPlayerHands() {
+    return this.playerHands;
+  }
+
   getDealer() {
     return this.dealer;
+  }
+
+  getDealerHand() {
+    return this.dealer.getHands()[0];
   }
 
   getGameOver() {
@@ -95,5 +155,11 @@ export default class Blackjack {
 
   getShoe() {
     return this.shoe;
+  }
+
+  getCurrentHand() {}
+
+  getLastHand() {
+    return this.playerHands[this.playerHands.length - 1];
   }
 }

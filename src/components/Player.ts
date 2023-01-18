@@ -1,51 +1,39 @@
 import Hand from "./Hand";
 
 export default class Player {
-  // todo: multiple hands per player
-  private hand: Hand;
-  private action: boolean;
-  private currenAction: boolean;
+  private playerID: number;
   private money: number;
+  private hands: Array<Hand> = [];
 
-  constructor() {
-    this.hand = new Hand();
-    this.action = false;
+  constructor(playerID: number, money: number) {
+    this.playerID = playerID;
     this.money = 100;
-    this.currenAction = false;
   }
 
   // setters
-  addCard(card: { suit: string; value: string }) {
-    this.hand.addCard(card);
+  newHand(betAmount: number) {
+    this.hands.push(new Hand(this.playerID, betAmount));
   }
 
   reset() {
-    this.hand.reset();
-    this.action = false;
+    this.hands.forEach((hand: Hand) => {
+      hand.reset();
+    });
   }
 
-  setAction(action: boolean) {
-    this.action = action;
+  bet(hand: Hand, amount: number) {
+    this.money -= hand.changeBet(amount);
   }
 
-  setCurrentAction(action: boolean) {
-    this.currenAction = action;
-  }
+  // todo: hand actions
+  // hit, stand, double, split
 
   // getters
-  getHand() {
-    return this.hand;
+  getHands() {
+    return this.hands;
   }
 
-  getHandTotal() {
-    return this.hand.calculateTotal();
-  }
-
-  getAction() {
-    return this.action;
-  }
-
-  getCurrentAction() {
-    return this.currenAction;
+  getMoney() {
+    return this.money;
   }
 }
