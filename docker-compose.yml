@@ -24,9 +24,4 @@ services:
     restart: always
     network_mode: traefik
     labels:
-      - "traefik.enable=true"
       - "traefik.http.routers.86.rule=Host(`86.agentzhao.me`)"
-      - "traefik.http.routers.86.tls=true"
-      - "traefik.http.routers.86.tls.certresolver=lets-encrypt"
-      - "traefik.http.routers.86.entrypoints=websecure"
-      - "traefik.port=80"
